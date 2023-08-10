@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {ReactElement} from 'react';
+import Stopwatch from "./components/Stopwatch";
+
 import './App.css';
 
-function App() {
+const App: React.FC<unknown> = (): ReactElement => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Stopwatch
+        granularityMs={1}
+        updateWindowTile={true}
+        mute={true}
+
+        beepTriggers={[
+          {
+            // type: 'beep4',
+
+            // frequency: 440,
+            // volume: 0.5,
+            // duration: 300,
+            condition: (ms) => ms % 1000 === 0, // every second
+          }
+        ]}
+      />
     </div>
   );
-}
+};
 
 export default App;
