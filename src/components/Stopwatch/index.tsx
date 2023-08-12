@@ -1,66 +1,6 @@
 import React, {useState, useEffect, ReactElement} from 'react';
-
-function formatTime(time: number, len = 2) {
-  return time.toString().padStart(len, '0');
-}
-
-function updateStopwatchDisplay(ms: number) {
-  const milliseconds = ms % 1000;
-  const seconds = Math.floor(ms / 1000);
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-  return `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(remainingSeconds)}.${formatTime(milliseconds, 3)}`;
-}
-
-function playBeep(duration: number, frequency: number, volume: number) {
-  const audioContext = new window.AudioContext();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.start();
-  gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration / 1000);
-
-  oscillator.stop(audioContext.currentTime + duration / 1000 + 0.1);
-}
-
-const beeps = {
-  beep1: () => {
-    playBeep(300, 140, 0.5);
-  },
-  beep2: () => {
-    playBeep(300, 240, 0.5);
-  },
-  beep3: () => {
-    playBeep(300, 340, 0.5);
-  },
-  beep4: () => {
-    playBeep(300, 440, 0.5);
-  },
-  beep5: () => {
-    playBeep(300, 540, 0.5);
-  },
-  beep6: () => {
-    playBeep(300, 640, 0.5);
-  },
-  beep7: () => {
-    playBeep(300, 740, 0.5);
-  },
-  beep8: () => {
-    playBeep(300, 840, 0.5);
-  },
-  beep9: () => {
-    playBeep(300, 940, 0.5);
-  },
-};
-
-export type DefaultBeeps = keyof typeof beeps;
+import {beeps, DefaultBeeps, playBeep} from "../../utils/sound";
+import {updateStopwatchDisplay} from "../../utils";
 
 export type BeepDescriptor = {
   type?: DefaultBeeps,
@@ -82,7 +22,7 @@ export type SplitTime = {
   smallTime: number,
 };
 
-const Timer: React.FC<TimerProps> = ({
+const Stopwatch: React.FC<TimerProps> = ({
                                        mute,
                                        granularityMs,
                                        updateWindowTile,
@@ -93,6 +33,7 @@ const Timer: React.FC<TimerProps> = ({
   const [splitTime, setSplitTime] = useState(0)
   const [running, setRunning] = useState(false);
   const intervalTime = granularityMs || 1;
+  const showMs = intervalTime % 1000 !== 0;
 
   // split
   const [splitTimes, setSplitTimes] = useState<SplitTime[]>([]);
@@ -118,7 +59,7 @@ const Timer: React.FC<TimerProps> = ({
     }
 
     if (updateWindowTile && time % 500 === 0) {
-      document.title = updateStopwatchDisplay(time);
+      document.title = updateStopwatchDisplay(time, showMs);
     }
 
     if (!mute) {
@@ -142,12 +83,12 @@ const Timer: React.FC<TimerProps> = ({
         }
       });
     }
-  }, [time, running, updateWindowTile, mute, beepTriggers, splitTime]);
+  }, [time, running, updateWindowTile, mute, beepTriggers, splitTime, showMs]);
 
   return (
     <div>
-      <p>{updateStopwatchDisplay(time)}</p>
-      <p>{updateStopwatchDisplay(splitTime)}</p>
+      <p>{updateStopwatchDisplay(time, showMs)}</p>
+      <p>{updateStopwatchDisplay(splitTime, showMs)}</p>
       <button
         onClick={() => {
           setRunning(!running);
@@ -182,8 +123,8 @@ const Timer: React.FC<TimerProps> = ({
         <tbody>
         {splitTimes?.map((split, index, arr) => {
           const key = `split-time-${uid}-${split.smallTime}-${split.bigTime}`;
-          const smallTime = updateStopwatchDisplay(split.smallTime);
-          const bigTime = updateStopwatchDisplay(split.bigTime);
+          const smallTime = updateStopwatchDisplay(split.smallTime, showMs);
+          const bigTime = updateStopwatchDisplay(split.bigTime, showMs);
 
           return (
             <tr key={key}>
@@ -205,4 +146,4 @@ const Timer: React.FC<TimerProps> = ({
   );
 };
 
-export default Timer;
+export default Stopwatch;
