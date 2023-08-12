@@ -9,7 +9,6 @@ const App: React.FC<unknown> = (): ReactElement => {
   return (
     <div className="App">
       <Timer mute={mute} />
-      <Timer mute={mute} />
       <Stopwatch
         granularityMs={1000}
         updateWindowTile={true}
