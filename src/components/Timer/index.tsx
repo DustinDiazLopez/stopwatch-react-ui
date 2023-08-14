@@ -50,11 +50,12 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <>
-      <p>{(running || alarm.isActive) && updateStopwatchDisplay(time, false)}</p>
+      <p className={'timer display'}>{(running || alarm.isActive) && updateStopwatchDisplay(time, false)}</p>
 
       {(!running && !alarm.isActive) && (
-        <div>
+        <div className={'timer-body'}>
           <input
+            className={'timer-input hour'}
             type={'number'}
             min={0}
             value={hour / 60 / 60 / 1000}
@@ -68,6 +69,7 @@ const Timer: React.FC<TimerProps> = ({
           />
           :
           <input
+            className={'timer-input minute'}
             type={'number'}
             min={0}
             max={60}
@@ -82,6 +84,7 @@ const Timer: React.FC<TimerProps> = ({
           />
           :
           <input
+            className={'timer-input seconds'}
             type={'number'}
             min={0}
             max={60}
@@ -99,6 +102,7 @@ const Timer: React.FC<TimerProps> = ({
 
       <div>
         <button
+          className={'timer-input start-btn'}
           onClick={() => {
             if (alarm.isActive) {
               alarm.off();
@@ -116,6 +120,7 @@ const Timer: React.FC<TimerProps> = ({
           {running ? 'Pause' : (alarm.isActive ? 'Stop Alarm' : 'Start')}
         </button>
         <button
+          className={'timer-input reset-btn'}
           onClick={() => {
             setRunning(false);
             originalTime && setTime(originalTime);

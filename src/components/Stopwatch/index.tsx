@@ -87,16 +87,18 @@ const Stopwatch: React.FC<TimerProps> = ({
 
   return (
     <div>
-      <p>{updateStopwatchDisplay(time, showMs)}</p>
-      <p>{updateStopwatchDisplay(splitTime, showMs)}</p>
+      <p className={'stopwatch-big-time'}>{updateStopwatchDisplay(time, showMs)}</p>
+      <p className={'small-big-time'}>{updateStopwatchDisplay(splitTime, showMs)}</p>
       <button
+        className={'stopwatch-big-time'}
         onClick={() => {
           setRunning(!running);
         }}
       >
-        {running ? 'Pause' : 'Start'}
+        {running ? 'Pause' : (time > 0 ? 'Resume' : 'Start')}
       </button>
       <button
+        className={'stopwatch-split-btn'}
         onClick={() => {
           setSplitTimes([
             {
@@ -111,6 +113,7 @@ const Stopwatch: React.FC<TimerProps> = ({
         {'Split'}
       </button>
       <button
+        className={'stopwatch-reset-btn'}
         onClick={() => {
           setTime(0);
           setSplitTime(0);
@@ -119,7 +122,7 @@ const Stopwatch: React.FC<TimerProps> = ({
       >
         {'Reset'}
       </button>
-      <table>
+      <table className={'stopwatch-split-times-table'}>
         <tbody>
         {splitTimes?.map((split, index, arr) => {
           const key = `split-time-${uid}-${split.smallTime}-${split.bigTime}`;

@@ -1,8 +1,36 @@
+import clasico from 'clasico';
+import {AnyFn} from "clasico/lib/@types";
+
+export type KeyValue = {
+  key: string,
+  value: unknown,
+};
+
+export function evaluate(
+  expression: string,
+  functions?: KeyValue[],
+  variables?: KeyValue[],
+) {
+  const parser = new clasico.template.SentenceParser({
+    includeBuiltIns: true,
+  });
+
+  variables?.forEach(({key, value}) => {
+    parser.addVar(key, value);
+  });
+
+  functions?.forEach(({key, value}) => {
+    parser.addFunction(key, value as AnyFn);
+  });
+
+  return parser.parse(expression);
+}
+
 export function formatTime(time: number, len = 2) {
   return time.toString().padStart(len, '0');
 }
 
-export function updateStopwatchDisplay(ms: number, showMs: boolean = true) {
+export function updateStopwatchDisplay(ms: number, showMs = true) {
   const milliseconds = ms % 1000;
   const seconds = Math.floor(ms / 1000);
   const hours = Math.floor(seconds / 3600);
