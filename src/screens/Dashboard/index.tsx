@@ -43,7 +43,7 @@ const Dashboard: React.FC<unknown> = (): ReactElement => {
     ];
   });
   const [expression,] = useState(
-    '$all($neq($smallTime, 0), $eq($mod($smallTime, 1 * 1000), 0))'
+    '$all($neq($smallTime, 0), $eq($mod($smallTime, 30 * 1000), 0))'
   );
 
   const [timers,] = useState([])
