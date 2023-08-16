@@ -6,12 +6,16 @@ export type KeyValue = {
   value: unknown,
 };
 
+export function isTrue(x: unknown) {
+  return clasico.check.isTrue(x);
+}
+
 export function evaluate(
   expression: string,
   functions?: KeyValue[],
   variables?: KeyValue[],
 ) {
-  const parser = new clasico.template.SentenceParser({
+  const parser = new clasico.template.TemplateParser({
     includeBuiltIns: true,
   });
 

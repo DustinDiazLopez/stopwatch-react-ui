@@ -1,11 +1,10 @@
 import React, {ReactElement, useState} from 'react';
 
+import * as utils from '../../utils';
 import Stopwatch from "../../components/Stopwatch";
 import Timer from "../../components/Timer";
-import * as utils from '../../utils';
 
 import './style.css';
-import clasico from "clasico";
 
 const Dashboard: React.FC<unknown> = (): ReactElement => {
   const [isMuted, setIsMuted] = useState(false);
@@ -43,13 +42,15 @@ const Dashboard: React.FC<unknown> = (): ReactElement => {
       },
     ];
   });
-  const [expression, setExpression] = useState(
+  const [expression,] = useState(
     '$all($neq($smallTime, 0), $eq($mod($smallTime, 1 * 1000), 0))'
   );
+
+  const [timers,] = useState([])
   return (
     <div className="App">
       <button onClick={() => setIsMuted(!isMuted)}>{isMuted ? 'Un-Mute' : 'Mute'}</button>
-      <Timer mute={isMuted} />
+      {timers.map(() => <Timer mute={isMuted}/>)}
       <Stopwatch
         granularityMs={1000}
         updateWindowTile={true}
@@ -61,7 +62,7 @@ const Dashboard: React.FC<unknown> = (): ReactElement => {
             volume: 1,
             duration: 1000,
             condition: (bigTime, smallTime) => {
-              const { result, logs } = utils.evaluate(
+              const {result, logs} = utils.evaluate(
                 expression,
                 commonParserFunctions,
                 [
@@ -77,14 +78,25 @@ const Dashboard: React.FC<unknown> = (): ReactElement => {
               );
 
               logs?.forEach((log) => {
+                const debugLog = {
+                  expression,
+                  bigTime,
+                  smallTime,
+                  debug: {
+                    lineNumber: log.lineNumber,
+                    error: log.error,
+                  },
+                };
+
+                const msg = log.message;
                 if (log.level === 'WARN') {
-                  console.warn(log);
+                  console.warn('[eval]', msg, debugLog);
                 } else if (log.level === 'ERROR') {
-                  console.error(log);
+                  console.error('[eval]', msg, debugLog);
                 }
               });
 
-              return clasico.check.isTrue(result);
+              return utils.isTrue(result);
             },
           }
         ]}
